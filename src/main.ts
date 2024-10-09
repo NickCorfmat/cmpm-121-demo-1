@@ -2,6 +2,8 @@ import "./style.css";
 
 const app: HTMLDivElement = document.querySelector("#app")!;
 
+let counter: number = 0;
+
 const gameName = "Super Awesome Bros.";
 document.title = gameName;
 
@@ -13,6 +15,12 @@ const button = document.createElement("button");
 button.innerHTML = "💩";
 app.append(button);
 
+const displayCount = document.createElement("div");
+displayCount.textContent = `${counter} Poos`;
+displayCount.id = "counter-display";
+app.append(displayCount);
+
 button.addEventListener("click", () => {
-  console.log("button clicked");
+  counter++;
+  displayCount.textContent = `${counter} Poos`;
 });
