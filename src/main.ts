@@ -22,5 +22,14 @@ app.append(displayCount);
 
 button.addEventListener("click", () => {
   counter++;
-  displayCount.textContent = `${counter} Poos`;
+  updateCounterText(counter);
 });
+
+setInterval(() => {
+  counter++;
+  updateCounterText(counter);
+}, 1000);
+
+function updateCounterText(count: number): void {
+  displayCount.textContent = `${count} Poos`;
+}
