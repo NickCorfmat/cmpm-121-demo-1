@@ -14,6 +14,8 @@ interface Inventory {
 
 const inventory: Inventory = { A: 0, B: 0, C: 0 };
 
+const upgradeButtons: HTMLButtonElement[] = [];
+
 const gameName = "Poop Clicker";
 document.title = gameName;
 
@@ -66,22 +68,26 @@ upgrades.forEach((upgrade) => {
   upgradeButton.innerHTML = upgrade.text;
   app.append(upgradeButton);
 
+  upgradeButtons.push(upgradeButton);
+
   upgradeButton.addEventListener("click", () => {
     if (counter >= upgrade.cost) {
       counter -= upgrade.cost;
       growthRate += upgrade.boost;
       inventory[upgrade.name as keyof Inventory] += 1;
+
+      increaseCostsBy(1.15);
     }
   });
 });
 
 /*** Helper Functions ***/
 function updateCounterDisplay(): void {
-  counterDisplay.innerHTML = `${Math.floor(counter)} Poops`;
+  counterDisplay.innerHTML = `${truncateDecimals(counter, 2)} Poops`;
 }
 
 function updateStatsDisplay(): void {
-  statusDisplay.innerHTML = `Rate: ${Math.floor(growthRate * 10) / 10} poops/sec<br>A: ${inventory.A}<br>B: ${inventory.B}<br>C: ${inventory.C}`;
+  statusDisplay.innerHTML = `Rate: ${truncateDecimals(growthRate, 2)} poops/sec<br>A: ${inventory.A}<br>B: ${inventory.B}<br>C: ${inventory.C}`;
 }
 
 // Citation: Brace, 10/8/24
@@ -96,4 +102,17 @@ function increaseCounterRate(time: number) {
   updateStatsDisplay();
 
   requestAnimationFrame(increaseCounterRate);
+}
+
+function increaseCostsBy(factor: number) {
+  upgrades.forEach((upgrade, index) => {
+    upgrade.cost *= factor;
+    upgrade.text = `+${upgrade.boost} poop/sec, Cost: ${truncateDecimals(upgrade.cost, 2)}`;
+    upgradeButtons[index].innerHTML = upgrade.text;
+  });
+}
+
+// Code inspired from StackOverflow, https://stackoverflow.com/questions/4912788/truncate-not-round-off-decimal-numbers-in-javascript
+function truncateDecimals(number: number, digits: number) {
+  return Math.floor(number * Math.pow(10, digits)) / Math.pow(10, digits);
 }
