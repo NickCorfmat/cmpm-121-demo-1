@@ -22,6 +22,7 @@ interface Inventory {
 
 interface Upgrade {
   index: string;
+  name: string;
   text: string;
   cost: number;
   boost: number;
@@ -48,21 +49,17 @@ clickerHeader.innerHTML = gameName;
 clickerColumn.append(clickerHeader);
 container.append(clickerColumn);
 
-const button = document.createElement("button");
-button.classList.add("toilet-clicker");
-button.innerHTML = "🚽";
-app.append(button);
+const clickerButton = document.createElement("button");
+clickerButton.classList.add("toilet-clicker");
+clickerButton.innerHTML = "🚽";
+clickerColumn.append(clickerButton);
 
 const counterDisplay = document.createElement("div");
 counterDisplay.id = "counter-display";
 counterDisplay.innerHTML = `${counter} Poops`;
-app.append(counterDisplay);
+clickerColumn.append(counterDisplay);
 
-const statusDisplay = document.createElement("div");
-statusDisplay.innerHTML = `Rate: ${growthRate}\nA: ${inventory.A}\nB: ${inventory.B}\nC: ${inventory.C}`;
-app.append(statusDisplay);
-
-button.addEventListener("click", (event) => {
+clickerButton.addEventListener("click", (event) => {
   counter++;
   animatePoopEmoji(event.clientX, event.clientY);
 });
@@ -75,6 +72,14 @@ statsHeader.innerHTML = "Stats";
 statsColumn.append(statsHeader);
 container.append(statsColumn);
 
+const rateDisplay = document.createElement("h2");
+rateDisplay.innerHTML = `Production Rate:<br>${truncateDecimals(growthRate, 1)} poops/sec`;
+statsColumn.append(rateDisplay);
+
+const statusDisplay = document.createElement("div");
+statusDisplay.innerHTML = `A: ${inventory.A}\nB: ${inventory.B}\nC: ${inventory.C}`;
+statsColumn.append(statusDisplay);
+
 requestAnimationFrame(increaseCounterRate);
 
 // Citation: Brace, 10/10,24
@@ -83,14 +88,35 @@ requestAnimationFrame(increaseCounterRate);
 // amounts. How can I condense this logic using an interface?
 
 const upgrades: Upgrade[] = [
-  { index: "A", text: "+0.1 poop/sec, Cost: 10", cost: 10, boost: 0.1 },
-  { index: "B", text: "+2 poop/sec, Cost: 100", cost: 100, boost: 2 },
-  { index: "C", text: "+50 poop/sec, Cost: 1000", cost: 1000, boost: 50 },
+  {
+    index: "A",
+    name: "Dollar Store Plunger",
+    text: "",
+    cost: 10,
+    boost: 0.1,
+  },
+  {
+    index: "B",
+    name: "Professional Plumber",
+    text: "",
+    cost: 100,
+    boost: 2,
+  },
+  {
+    index: "C",
+    name: "Sewage Squad",
+    text: "",
+    cost: 1000,
+    boost: 50,
+  },
 ];
 
 upgrades.forEach((upgrade) => {
   const upgradeButton = document.createElement("button");
   upgradeButton.classList.add("upgrade");
+  upgrade.text =
+    upgrade.name +
+    `<br>+${upgrade.boost} poop/sec, Cost: ${truncateDecimals(upgrade.cost, 1)}`;
   upgradeButton.innerHTML = upgrade.text;
   upgradesColumn.append(upgradeButton);
 
@@ -112,7 +138,8 @@ function updateCounterDisplay(): void {
 }
 
 function updateStatsDisplay(): void {
-  statusDisplay.innerHTML = `Rate: ${truncateDecimals(growthRate, 1)} poops/sec<br>A: ${inventory.A}<br>B: ${inventory.B}<br>C: ${inventory.C}`;
+  rateDisplay.innerHTML = `Production Rate:<br>${truncateDecimals(growthRate, 1)} poops/sec`;
+  statusDisplay.innerHTML = `Dollar Store Plungers: ${inventory.A}<br>Professional Plumbers: ${inventory.B}<br>Sewage Squads: ${inventory.C}`;
 }
 
 // Citation: Brace, 10/8/24
@@ -132,7 +159,9 @@ function increaseCounterRate(time: number) {
 function increaseCostsBy(factor: number) {
   upgrades.forEach((upgrade, index) => {
     upgrade.cost *= factor;
-    upgrade.text = `+${upgrade.boost} poop/sec, Cost: ${truncateDecimals(upgrade.cost, 1)}`;
+    upgrade.text =
+      upgrade.name +
+      `<br>+${upgrade.boost} poop/sec, Cost: ${truncateDecimals(upgrade.cost, 1)}`;
     upgradeButtons[index].innerHTML = upgrade.text;
   });
 }
