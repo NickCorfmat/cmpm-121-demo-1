@@ -29,22 +29,20 @@ button.innerHTML = "🚽";
 app.append(button);
 
 const counterDisplay = document.createElement("div");
-counterDisplay.innerHTML = `${counter} Poos`;
 counterDisplay.id = "counter-display";
+counterDisplay.innerHTML = `${counter} Poops`;
 app.append(counterDisplay);
 
 const statusDisplay = document.createElement("div");
 statusDisplay.innerHTML = `Rate: ${growthRate}\nA: ${inventory.A}\nB: ${inventory.B}\nC: ${inventory.C}`;
 app.append(statusDisplay);
 
-// Manual clicker
-button.addEventListener("click", () => {
+button.addEventListener("click", (event) => {
   counter++;
+  animatePoopEmoji(event.clientX, event.clientY);
 });
 
 requestAnimationFrame(increaseCounterRate);
-
-/*** Upgrades ***/
 
 // Citation: Brace, 10/10,24
 // Prompt: i have this typescript code for a cookie clicker type game. However, it's long and redundant.
@@ -52,16 +50,16 @@ requestAnimationFrame(increaseCounterRate);
 // amounts. How can I condense this logic using an interface?
 
 interface Upgrade {
-  name: string;
+  index: string;
   text: string;
   cost: number;
   boost: number;
 }
 
 const upgrades: Upgrade[] = [
-  { name: "A", text: "+0.1 poop/sec, Cost: 10", cost: 10, boost: 0.1 },
-  { name: "B", text: "+2 poop/sec, Cost: 100", cost: 100, boost: 2 },
-  { name: "C", text: "+50 poop/sec, Cost: 1000", cost: 1000, boost: 50 },
+  { index: "A", text: "+0.1 poop/sec, Cost: 10", cost: 10, boost: 0.1 },
+  { index: "B", text: "+2 poop/sec, Cost: 100", cost: 100, boost: 2 },
+  { index: "C", text: "+50 poop/sec, Cost: 1000", cost: 1000, boost: 50 },
 ];
 
 upgrades.forEach((upgrade) => {
@@ -75,20 +73,19 @@ upgrades.forEach((upgrade) => {
     if (counter >= upgrade.cost) {
       counter -= upgrade.cost;
       growthRate += upgrade.boost;
-      inventory[upgrade.name as keyof Inventory] += 1;
+      inventory[upgrade.index as keyof Inventory] += 1;
 
       increaseCostsBy(1.15);
     }
   });
 });
 
-/*** Helper Functions ***/
 function updateCounterDisplay(): void {
-  counterDisplay.innerHTML = `${truncateDecimals(counter, 2)} Poops`;
+  counterDisplay.innerHTML = `${truncateDecimals(counter, 1)} Poops`;
 }
 
 function updateStatsDisplay(): void {
-  statusDisplay.innerHTML = `Rate: ${truncateDecimals(growthRate, 2)} poops/sec<br>A: ${inventory.A}<br>B: ${inventory.B}<br>C: ${inventory.C}`;
+  statusDisplay.innerHTML = `Rate: ${truncateDecimals(growthRate, 1)} poops/sec<br>A: ${inventory.A}<br>B: ${inventory.B}<br>C: ${inventory.C}`;
 }
 
 // Citation: Brace, 10/8/24
@@ -108,9 +105,31 @@ function increaseCounterRate(time: number) {
 function increaseCostsBy(factor: number) {
   upgrades.forEach((upgrade, index) => {
     upgrade.cost *= factor;
-    upgrade.text = `+${upgrade.boost} poop/sec, Cost: ${truncateDecimals(upgrade.cost, 2)}`;
+    upgrade.text = `+${upgrade.boost} poop/sec, Cost: ${truncateDecimals(upgrade.cost, 1)}`;
     upgradeButtons[index].innerHTML = upgrade.text;
   });
+}
+
+
+// Citation: Brace, 10/10/24
+// Prompt: I want to animate a poop emoji when I click the toilet button. How do I animate this using typescript, HTML, and CSS?
+function animatePoopEmoji(x: number, y: number) {
+  const poopEmoji = document.createElement("div");
+  poopEmoji.innerHTML = "💩";
+  poopEmoji.classList.add("poop-emoji");
+  document.body.appendChild(poopEmoji);
+
+  poopEmoji.style.left = `${x}px`;
+  poopEmoji.style.top = `${y}px`;
+
+  setTimeout(() => {
+    poopEmoji.style.transform = "translateY(-200px)";
+    poopEmoji.style.opacity = "0";
+  }, 0);
+
+  setTimeout(() => {
+    poopEmoji.remove();
+  }, 1000);
 }
 
 // Code inspired from StackOverflow, https://stackoverflow.com/questions/4912788/truncate-not-round-off-decimal-numbers-in-javascript

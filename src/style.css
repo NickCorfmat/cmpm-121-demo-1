@@ -77,6 +77,24 @@ button:focus-visible {
   background-color: aqua;
 }
 
+.toilet-clicker:hover {
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+  transition: 0.15s ease;
+}
+
+#counter-display {
+  font-size: 30px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.poop-emoji {
+  position: absolute;
+  font-size: 2em;
+  transition: transform 1s ease, opacity 1s ease;
+  pointer-events: none;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
