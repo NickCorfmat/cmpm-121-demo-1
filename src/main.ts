@@ -25,10 +25,14 @@ const button = document.createElement("button");
 button.innerHTML = "💩";
 app.append(button);
 
-const displayCount = document.createElement("div");
-displayCount.textContent = `${counter} Poos`;
-displayCount.id = "counter-display";
-app.append(displayCount);
+const counterDisplay = document.createElement("div");
+counterDisplay.innerHTML = `${counter} Poos`;
+counterDisplay.id = "counter-display";
+app.append(counterDisplay);
+
+const statusDisplay = document.createElement("div");
+statusDisplay.innerHTML = `Rate: ${growthRate}\nA: ${inventory.A}\nB: ${inventory.B}\nC: ${inventory.C}`;
+app.append(statusDisplay);
 
 // Manual clicker
 button.addEventListener("click", () => {
@@ -46,36 +50,38 @@ requestAnimationFrame(increaseCounterRate);
 
 interface Upgrade {
   name: string;
-  buttonText: string;
+  text: string;
   cost: number;
-  boostRate: number;
+  boost: number;
 }
 
 const upgrades: Upgrade[] = [
-  { name: "A", buttonText: "+0.1 p/s, Cost: 10", cost: 10, boostRate: 0.1 },
-  { name: "B", buttonText: "+2 p/s, Cost: 100", cost: 100, boostRate: 2 },
-  { name: "C", buttonText: "+50 p/s, Cost: 1000", cost: 1000, boostRate: 50 },
+  { name: "A", text: "+0.1 poop/sec, Cost: 10", cost: 10, boost: 0.1 },
+  { name: "B", text: "+2 poop/sec, Cost: 100", cost: 100, boost: 2 },
+  { name: "C", text: "+50 poop/sec, Cost: 1000", cost: 1000, boost: 50 },
 ];
 
 upgrades.forEach((upgrade) => {
   const upgradeButton = document.createElement("button");
-  upgradeButton.innerHTML = upgrade.buttonText;
+  upgradeButton.innerHTML = upgrade.text;
   app.append(upgradeButton);
 
   upgradeButton.addEventListener("click", () => {
     if (counter >= upgrade.cost) {
       counter -= upgrade.cost;
-      growthRate += upgrade.boostRate;
+      growthRate += upgrade.boost;
       inventory[upgrade.name as keyof Inventory] += 1;
     }
   });
 });
 
 /*** Helper Functions ***/
-function updateText(): void {
-  displayCount.textContent = `${Math.floor(counter)} Poos`;
-  //displayRate.textContent = `Current Growth Rate: ${growthRate}\n`;
-  //displayInventory.textContent = `Upgrades Owned:\nA: ${inventory.A}\nB: ${inventory.B}\nC: ${inventory.C}`;
+function updateCounterDisplay(): void {
+  counterDisplay.innerHTML = `${Math.floor(counter)} Poops`;
+}
+
+function updateStatsDisplay(): void {
+  statusDisplay.innerHTML = `Rate: ${Math.floor(growthRate * 10) / 10} poops/sec<br>A: ${inventory.A}<br>B: ${inventory.B}<br>C: ${inventory.C}`;
 }
 
 // Citation: Brace, 10/8/24
@@ -86,7 +92,8 @@ function increaseCounterRate(time: number) {
   lastTimeStamp = time;
 
   counter += elapsed * growthRate;
-  updateText();
+  updateCounterDisplay();
+  updateStatsDisplay();
 
   requestAnimationFrame(increaseCounterRate);
 }
