@@ -2,26 +2,51 @@ import "./style.css";
 
 const app: HTMLDivElement = document.querySelector("#app")!;
 
+const gameName = "Toilet Clicker";
+document.title = gameName;
+
+// Global variables
 let counter: number = 0;
 let growthRate: number = 0;
 let lastTimeStamp: number = 0;
 
+const inventory: Inventory = { A: 0, B: 0, C: 0 };
+const upgradeButtons: HTMLButtonElement[] = [];
+
+// Interfaces
 interface Inventory {
   A: number;
   B: number;
   C: number;
 }
 
-const inventory: Inventory = { A: 0, B: 0, C: 0 };
+interface Upgrade {
+  index: string;
+  text: string;
+  cost: number;
+  boost: number;
+}
 
-const upgradeButtons: HTMLButtonElement[] = [];
+// Column container
+const container = document.createElement("div");
+container.classList.add("container");
+app.append(container);
 
-const gameName = "Toilet Clicker";
-document.title = gameName;
+// Upgrades Column
+const upgradesColumn = document.createElement("div");
+upgradesColumn.classList.add("column");
+const upgradesHeader = document.createElement("h1");
+upgradesHeader.innerHTML = "Upgrades";
+upgradesColumn.append(upgradesHeader);
+container.append(upgradesColumn);
 
-const header = document.createElement("h1");
-header.innerHTML = gameName;
-app.append(header);
+// Clicker Column
+const clickerColumn = document.createElement("div");
+clickerColumn.classList.add("column");
+const clickerHeader = document.createElement("h1");
+clickerHeader.innerHTML = gameName;
+clickerColumn.append(clickerHeader);
+container.append(clickerColumn);
 
 const button = document.createElement("button");
 button.classList.add("toilet-clicker");
@@ -42,19 +67,20 @@ button.addEventListener("click", (event) => {
   animatePoopEmoji(event.clientX, event.clientY);
 });
 
+// Stats Column
+const statsColumn = document.createElement("div");
+statsColumn.classList.add("column");
+const statsHeader = document.createElement("h1");
+statsHeader.innerHTML = "Stats";
+statsColumn.append(statsHeader);
+container.append(statsColumn);
+
 requestAnimationFrame(increaseCounterRate);
 
 // Citation: Brace, 10/10,24
 // Prompt: i have this typescript code for a cookie clicker type game. However, it's long and redundant.
 // Each upgrade would realistically cost different amunts and increment the growth rate by different
 // amounts. How can I condense this logic using an interface?
-
-interface Upgrade {
-  index: string;
-  text: string;
-  cost: number;
-  boost: number;
-}
 
 const upgrades: Upgrade[] = [
   { index: "A", text: "+0.1 poop/sec, Cost: 10", cost: 10, boost: 0.1 },
@@ -64,8 +90,9 @@ const upgrades: Upgrade[] = [
 
 upgrades.forEach((upgrade) => {
   const upgradeButton = document.createElement("button");
+  upgradeButton.classList.add("upgrade");
   upgradeButton.innerHTML = upgrade.text;
-  app.append(upgradeButton);
+  upgradesColumn.append(upgradeButton);
 
   upgradeButtons.push(upgradeButton);
 
@@ -109,7 +136,6 @@ function increaseCostsBy(factor: number) {
     upgradeButtons[index].innerHTML = upgrade.text;
   });
 }
-
 
 // Citation: Brace, 10/10/24
 // Prompt: I want to animate a poop emoji when I click the toilet button. How do I animate this using typescript, HTML, and CSS?
