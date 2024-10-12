@@ -172,7 +172,9 @@ function updateStatsDisplay(): void {
 function updateButtonStates() {
   itemButtons.forEach((button, index) => {
     const item = availableItems[index];
-    console.log(`Counter: ${counter}, Item Cost: ${item.cost}, Button Disabled: ${button.disabled}`);
+    console.log(
+      `Counter: ${counter}, Item Cost: ${item.cost}, Button Disabled: ${button.disabled}`,
+    );
     button.disabled = counter < item.cost;
   });
 }
