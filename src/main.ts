@@ -1,32 +1,30 @@
 import "./style.css";
 
 const app: HTMLDivElement = document.querySelector("#app")!;
-
 const gameName = "Toilet Clicker";
 document.title = gameName;
 
-// Global variables
+// Interfaces
+interface Item {
+  name: string;
+  cost: number;
+  rate: number;
+}
+
+// Game state global variables
 let counter: number = 0;
 let growthRate: number = 0;
 let lastTimeStamp: number = 0;
+const itemsPurchased = new Map<string, number>();
 
-const inventory: Inventory = { A: 0, B: 0, C: 0 };
-const upgradeButtons: HTMLButtonElement[] = [];
+const availableItems: Item[] = [
+  { name: "Dollar Store Plungers", cost: 10, rate: 0.1 },
+  { name: "Professional Plumbers", cost: 100, rate: 2 },
+  { name: "Sewage Squad", cost: 1000, rate: 50 },
+];
 
-// Interfaces
-interface Inventory {
-  A: number;
-  B: number;
-  C: number;
-}
-
-interface Upgrade {
-  index: string;
-  name: string;
-  text: string;
-  cost: number;
-  boost: number;
-}
+// Item button DOM Elements
+const itemButtons: HTMLButtonElement[] = [];
 
 // Column container
 const container = document.createElement("div");
@@ -77,7 +75,6 @@ rateDisplay.innerHTML = `Production Rate:<br>${truncateDecimals(growthRate, 1)} 
 statsColumn.append(rateDisplay);
 
 const statusDisplay = document.createElement("div");
-statusDisplay.innerHTML = `A: ${inventory.A}\nB: ${inventory.B}\nC: ${inventory.C}`;
 statsColumn.append(statusDisplay);
 
 requestAnimationFrame(increaseCounterRate);
@@ -87,47 +84,23 @@ requestAnimationFrame(increaseCounterRate);
 // Each upgrade would realistically cost different amunts and increment the growth rate by different
 // amounts. How can I condense this logic using an interface?
 
-const upgrades: Upgrade[] = [
-  {
-    index: "A",
-    name: "Dollar Store Plunger",
-    text: "",
-    cost: 10,
-    boost: 0.1,
-  },
-  {
-    index: "B",
-    name: "Professional Plumber",
-    text: "",
-    cost: 100,
-    boost: 2,
-  },
-  {
-    index: "C",
-    name: "Sewage Squad",
-    text: "",
-    cost: 1000,
-    boost: 50,
-  },
-];
 
-upgrades.forEach((upgrade) => {
-  const upgradeButton = document.createElement("button");
-  upgradeButton.classList.add("upgrade");
-  upgrade.text =
-    upgrade.name +
-    `<br>+${upgrade.boost} poop/sec, Cost: ${truncateDecimals(upgrade.cost, 1)}`;
-  upgradeButton.innerHTML = upgrade.text;
-  upgradesColumn.append(upgradeButton);
+// Create DOM Buttons for each Item
+availableItems.forEach((item) => {
+  const itemButton = document.createElement("button");
+  itemButton.classList.add("item");
+  itemButton.innerHTML =
+    item.name +
+    `<br>+${item.rate} poop/sec, Cost: ${truncateDecimals(item.cost, 1)}`;
+  upgradesColumn.append(itemButton);
 
-  upgradeButtons.push(upgradeButton);
+  itemButtons.push(itemButton);
 
-  upgradeButton.addEventListener("click", () => {
-    if (counter >= upgrade.cost) {
-      counter -= upgrade.cost;
-      growthRate += upgrade.boost;
-      inventory[upgrade.index as keyof Inventory] += 1;
-
+  itemButton.addEventListener("click", () => {
+    if (counter >= item.cost) {
+      counter -= item.cost;
+      growthRate += item.rate;
+      addToInventory(item.name, 1);
       increaseCostsBy(1.15);
     }
   });
@@ -139,7 +112,11 @@ function updateCounterDisplay(): void {
 
 function updateStatsDisplay(): void {
   rateDisplay.innerHTML = `Production Rate:<br>${truncateDecimals(growthRate, 1)} poops/sec`;
-  statusDisplay.innerHTML = `Dollar Store Plungers: ${inventory.A}<br>Professional Plumbers: ${inventory.B}<br>Sewage Squads: ${inventory.C}`;
+
+  statusDisplay.innerHTML = "";
+  itemsPurchased.forEach((value, key) => {
+    statusDisplay.innerHTML += `${key}: ${value}<br>`;
+  });
 }
 
 // Citation: Brace, 10/8/24
@@ -157,13 +134,12 @@ function increaseCounterRate(time: number) {
 }
 
 function increaseCostsBy(factor: number) {
-  upgrades.forEach((upgrade, index) => {
-    upgrade.cost *= factor;
-    upgrade.text =
-      upgrade.name +
-      `<br>+${upgrade.boost} poop/sec, Cost: ${truncateDecimals(upgrade.cost, 1)}`;
-    upgradeButtons[index].innerHTML = upgrade.text;
-  });
+  for (let i = 0; i < availableItems.length; i++) {
+    availableItems[i].cost *= factor;
+    itemButtons[i].innerHTML =
+      availableItems[i].name +
+      `<br>+${availableItems[i].rate} poop/sec, Cost: ${truncateDecimals(availableItems[i].cost, 1)}`;
+  }
 }
 
 // Citation: Brace, 10/10/24
@@ -190,4 +166,13 @@ function animatePoopEmoji(x: number, y: number) {
 // Code inspired from StackOverflow, https://stackoverflow.com/questions/4912788/truncate-not-round-off-decimal-numbers-in-javascript
 function truncateDecimals(number: number, digits: number) {
   return Math.floor(number * Math.pow(10, digits)) / Math.pow(10, digits);
+}
+
+function addToInventory(itemKey: string, amount: number) {
+  if (itemsPurchased.has(itemKey)) {
+    const currentAmount = itemsPurchased.get(itemKey) || 0;
+    itemsPurchased.set(itemKey, currentAmount + amount);
+  } else {
+    itemsPurchased.set(itemKey, amount);
+  }
 }
