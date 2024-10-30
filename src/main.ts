@@ -173,11 +173,11 @@ function setUpgradeButtonHTML(button: HTMLButtonElement, item: Item): void {
 
 function setUpgradeButtonListeners(
   button: HTMLButtonElement,
-  item: Item
+  item: Item,
 ): void {
   button.addEventListener("mouseover", () => onUpgradeButtonMouseHover(item));
   button.addEventListener("mousemove", (event) =>
-    onUpgradeButtonMouseMove(event)
+    onUpgradeButtonMouseMove(event),
   );
   button.addEventListener("mouseout", () => onUpgradeButtonMouseOut());
   button.addEventListener("click", () => onUpgradeButtonClick(item));
