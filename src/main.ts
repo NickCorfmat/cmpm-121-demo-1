@@ -89,7 +89,6 @@ clickerColumn.append(clickerButton);
 // create counter display
 const counterDisplay = document.createElement("div");
 counterDisplay.id = "counter-display";
-counterDisplay.innerHTML = `${counter} Poops`;
 clickerColumn.append(counterDisplay);
 
 // action to perform when toilet is clicked
@@ -100,7 +99,6 @@ clickerButton.addEventListener("click", (event) => {
 
 // create stats displays
 const rateDisplay = document.createElement("h2");
-rateDisplay.innerHTML = `Production Rate:<br>${truncateDecimals(growthRate, 1)} poops/sec`;
 statsColumn.append(rateDisplay);
 
 const statusDisplay = document.createElement("div");
@@ -108,11 +106,11 @@ statsColumn.append(statusDisplay);
 
 // stats display helpers
 function updateCounterDisplay(): void {
-  counterDisplay.innerHTML = `${truncateDecimals(counter, 1)} poops`;
+  counterDisplay.innerHTML = `${truncateDecimals(counter, 1)} 💩`;
 }
 
 function updateStatsDisplay(): void {
-  rateDisplay.innerHTML = `Production Rate:<br>${truncateDecimals(growthRate, 1)} poops/sec`;
+  rateDisplay.innerHTML = `Production Rate:<br>${truncateDecimals(growthRate, 1)} 💩/sec`;
   statusDisplay.innerHTML = "";
 
   itemsPurchased.forEach((value, key) => {
@@ -168,7 +166,7 @@ function setUpgradeButtonHTML(button: HTMLButtonElement, item: Item): void {
   button.classList.add("item");
   button.innerHTML =
     item.name +
-    `<br>+${item.rate} poop/sec, Cost: ${truncateDecimals(item.cost, 1)}`;
+    `<br>+${item.rate} 💩/sec, Cost: ${truncateDecimals(item.cost, 1)} 💩`;
 
   upgradesColumn.appendChild(button);
 }
@@ -240,7 +238,7 @@ function increaseItemCostsBy(factor: number) {
   availableItems.forEach((item, index) => {
     item.cost *= factor;
     itemButtons[index].innerHTML =
-      `${item.name}<br>+${item.rate} poop/sec, Cost: ${truncateDecimals(item.cost, 1)}`;
+      `${item.name}<br>+${item.rate} 💩/sec, Cost: ${truncateDecimals(item.cost, 1)}`;
   });
 }
 
